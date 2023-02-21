@@ -106,23 +106,23 @@ export default function HeapContent({ content, className }: HeapContentProps) {
   const inlineLength = content.inline.length;
 
   return (
-    <div className={className}>
+    <>
       {content.block.map((b, idx) => {
         if ('cite' in b) {
-          return <ContentReference key={idx} cite={b.cite} />;
+          return <ContentReference key={idx} cite={b.cite} context="heap" />;
         }
         return '??';
       })}
       {inlineLength > 0 ? (
-        <>
+        <div className={className}>
           {content.inline.map((inlineItem, index) => (
             <InlineContent
               key={`${inlineItem.toString()}-${index}`}
               inline={inlineItem}
             />
           ))}
-        </>
+        </div>
       ) : null}
-    </div>
+    </>
   );
 }

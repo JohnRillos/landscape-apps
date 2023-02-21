@@ -8,6 +8,7 @@ import {
   matchesBans,
   pluralRank,
   toTitleCase,
+  isColor,
 } from '@/logic/utils';
 import ShipName from '@/components/ShipName';
 import ExclamationPoint from '@/components/icons/ExclamationPoint';
@@ -18,6 +19,7 @@ interface GroupReferenceProps {
   isScrolling?: boolean;
   plain?: boolean;
   description?: string;
+  context?: string;
 }
 
 export default function GroupReference({
@@ -25,6 +27,7 @@ export default function GroupReference({
   isScrolling = false,
   plain = false,
   description,
+  context,
 }: GroupReferenceProps) {
   const gang = useGang(flag);
   const { group, privacy, open, reject, button, status } = useGroupJoin(
@@ -53,6 +56,64 @@ export default function GroupReference({
       <div className="relative flex h-16 items-center space-x-3 rounded-lg border-2 border-gray-50 bg-gray-50 p-2 text-base font-semibold text-gray-600">
         <ExclamationPoint className="h-8 w-8 text-gray-400" />
         <span>This content is unavailable to you</span>
+      </div>
+    );
+  }
+
+  if (context === 'heap') {
+    const bgStyle = () => {
+      if (meta && !isColor(meta.cover)) {
+        return { backgroundImage: `url(${meta?.cover}` };
+      }
+      return { backgroundColor: meta?.cover };
+    };
+    return (
+      <div
+        className="absolute flex h-full w-full items-start justify-center rounded-md bg-cover bg-center p-2"
+        style={bgStyle()}
+      >
+        <div className="flex w-full items-center space-x-2 rounded-lg bg-white p-2">
+          <GroupAvatar {...meta} size="h-6 w-6" />
+
+          <h3 className="grow truncate text-left font-semibold leading-5 text-black">
+            {meta?.title || flag}
+          </h3>
+
+          <div className="self-end">
+            {banned ? (
+              <span className="inline-block px-2 font-semibold text-gray-600">
+                {banned === 'ship'
+                  ? "You've been banned from this group"
+                  : `${toTitleCase(pluralRank(banned))} are banned`}
+              </span>
+            ) : (
+              <>
+                {gang.invite && !group && status !== 'loading' ? (
+                  <button
+                    className="small-button bg-red text-white dark:text-black"
+                    onClick={reject}
+                  >
+                    Reject
+                  </button>
+                ) : null}
+                {status === 'loading' ? (
+                  <div className="flex items-center space-x-2">
+                    <span className="text-gray-400">Joining...</span>
+                    <LoadingSpinner />
+                  </div>
+                ) : (
+                  <button
+                    className="small-button bg-blue text-white dark:text-black"
+                    onClick={button.action}
+                    disabled={button.disabled || status === 'error'}
+                  >
+                    {status === 'error' ? 'Errored' : button.text}
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        </div>
       </div>
     );
   }

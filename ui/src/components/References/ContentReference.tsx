@@ -15,12 +15,20 @@ import BaitReference from './BaitReference';
 function ContentReference({
   cite,
   isScrolling = false,
+  context,
 }: {
   cite: Cite;
   isScrolling?: boolean;
+  context?: string;
 }) {
   if ('group' in cite) {
-    return <GroupReference flag={cite.group} isScrolling={isScrolling} />;
+    return (
+      <GroupReference
+        flag={cite.group}
+        isScrolling={isScrolling}
+        context={context}
+      />
+    );
   }
 
   if ('desk' in cite) {
