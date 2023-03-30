@@ -1,13 +1,14 @@
-import GroupAvatar from '@/groups/GroupAvatar';
+import React from 'react';
 import cn from 'classnames';
-import React, { useState } from 'react';
 import { isColor } from '@/logic/utils';
 import { useAvatar } from '@/state/avatar';
-import PeopleIcon from '../components/icons/PeopleIcon';
+import Avatar from '@/components/Avatar';
+import GroupAvatar from '@/groups/GroupAvatar';
 
 export type MultiDmAvatarSize = 'xs' | 'small' | 'default' | 'huge';
 
 interface MultiDmAvatarProps {
+  members?: string[];
   image?: string;
   color?: string;
   size?: MultiDmAvatarSize;
@@ -36,6 +37,7 @@ const sizeMap = {
 };
 
 export default function MultiDmAvatar({
+  members,
   image,
   color,
   size = 'default',
@@ -45,6 +47,24 @@ export default function MultiDmAvatar({
 }: MultiDmAvatarProps) {
   const { hasLoaded, load } = useAvatar(image || '');
   const showImage = hasLoaded || loadImage;
+
+  const avatarList = (ships: Array<string>) =>
+    ships.map(
+      (member: string, i: number) =>
+        i < 4 && (
+          <div key={member} className="flex items-center justify-center">
+            <Avatar key={member} ship={member} size="xxs" />
+          </div>
+        )
+    );
+
+  function avatarGrid() {
+    return (
+      <div className="grid h-12 w-12 grid-cols-2 grid-rows-2 rounded-lg border-2 border-gray-50 sm:h-6 sm:w-6 sm:rounded">
+        {members && avatarList(members)}
+      </div>
+    );
+  }
 
   if (image && isColor(image)) {
     return (
@@ -68,19 +88,6 @@ export default function MultiDmAvatar({
   }
 
   return (
-    <div
-      className={cn(
-        'flex items-center justify-center bg-gray-50 text-gray-600',
-        sizeMap[size].size,
-        className
-      )}
-      style={{
-        backgroundColor: color,
-      }}
-    >
-      <PeopleIcon
-        className={cn(color && 'mix-blend-multiply', sizeMap[size].iconSize)}
-      />
-    </div>
+    <div className={cn(sizeMap[size].size, className)}>{avatarGrid()}</div>
   );
 }

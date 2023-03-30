@@ -110,23 +110,27 @@ export function MultiDMSidebarItem({
     return null;
   }
 
-  return (
-    <SidebarItem
-      to={`/dm/${whom}`}
-      icon={
-        <MultiDmAvatar
-          {...club?.meta}
-          title={groupName}
-          className="h-12 w-12 rounded-lg sm:h-6 sm:w-6 sm:rounded"
-          loadImage={!isScrolling}
-          {...avatarSize()}
-        />
-      }
-      actions={<DmOptions whom={whom} pending={!!pending} isMulti />}
-    >
-      {groupName}
-    </SidebarItem>
-  );
+  if (club)
+    return (
+      <SidebarItem
+        to={`/dm/${whom}`}
+        icon={
+          <MultiDmAvatar
+            {...club?.meta}
+            members={club?.team.concat(club?.hive)}
+            title={groupName}
+            className="h-12 w-12 rounded-lg sm:h-6 sm:w-6 sm:rounded"
+            loadImage={!isScrolling}
+            {...avatarSize()}
+          />
+        }
+        actions={<DmOptions whom={whom} pending={!!pending} isMulti />}
+      >
+        {groupName}
+      </SidebarItem>
+    );
+
+  return null;
 }
 
 function MessagesSidebarItem({ whom, pending }: MessagesSidebarItemProps) {
