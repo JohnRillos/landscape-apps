@@ -1,9 +1,9 @@
-import cn from 'classnames';
 import React from 'react';
-import { pluralize } from '../logic/utils';
-import { Club } from '../types/chat';
-import MultiDmAvatar from './MultiDmAvatar';
-import ShipName from '../components/ShipName';
+import cn from 'classnames';
+import { Club } from '@/types/chat';
+import { pluralize } from '@/logic/utils';
+import ShipName from '@/components/ShipName';
+import Avatar from '@/components/Avatar';
 
 interface MultiDMHeroProps {
   club: Club;
@@ -28,15 +28,33 @@ export default function MultiDmHero({ club }: MultiDMHeroProps) {
       );
     });
 
+  const avatarList = (ships: Array<string>) =>
+    ships.map(
+      (member: string, i: number) =>
+        i < 4 && (
+          <div key={member} className="flex items-center justify-center">
+            <Avatar key={member} ship={member} size="small" />
+          </div>
+        )
+    );
+
+  function avatarGrid() {
+    return (
+      <div className="grid h-20 w-20 grid-cols-2 grid-rows-2 rounded-lg border-2 border-gray-50 bg-white">
+        {avatarList(club.team.concat(club.hive))}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center">
-      <MultiDmAvatar {...club.meta} size="huge" className="mb-2" />
+      {avatarGrid()}
       {club.meta.title ? (
-        <h2 className="mb-1 text-lg font-semibold">{club.meta.title}</h2>
+        <h2 className="mb-1 mt-2 text-lg font-semibold">{club.meta.title}</h2>
       ) : null}
       <div
         className={cn(
-          'mb-1 max-w-md font-semibold',
+          'mb-1 max-w-md text-center font-semibold',
           club.meta.title && 'text-gray-600'
         )}
       >
