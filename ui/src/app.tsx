@@ -70,14 +70,15 @@ import bootstrap from './state/bootstrap';
 import AboutDialog from './components/AboutDialog';
 import UpdateNotice from './components/UpdateNotice';
 import MobileGroupChannelList from './groups/MobileGroupChannelList';
-import useConnectionChecker from './logic/useConnectionChecker';
 import LandscapeWayfinding from './components/LandscapeWayfinding';
 import { useScheduler } from './state/scheduler';
 import { LeapProvider } from './components/Leap/useLeap';
 import VitaMessage from './components/VitaMessage';
 import Dialog, { DialogContent } from './components/Dialog';
 import useIsStandaloneMode from './logic/useIsStandaloneMode';
+import Eyrie from './components/Eyrie';
 import queryClient from './queryClient';
+import EmojiPicker from './components/EmojiPicker';
 
 const Grid = React.lazy(() => import('./components/Grid/grid'));
 const TileInfo = React.lazy(() => import('./components/Grid/tileinfo'));
@@ -241,6 +242,18 @@ function ChatRoutes({ state, location, isMobile, isSmall }: RoutesProps) {
             path="/gangs/:ship/:name/reject"
             element={<RejectConfirmModal />}
           />
+          {isMobile ? (
+            <>
+              <Route
+                path="/groups/:ship/:name/channels/chat/:chShip/:chName/picker/:writShip/:writTime"
+                element={<EmojiPicker />}
+              />
+              <Route
+                path="/dm/:ship/picker/:writShip/:writTime"
+                element={<EmojiPicker />}
+              />
+            </>
+          ) : null}
         </Routes>
       ) : null}
     </>
@@ -467,6 +480,12 @@ function GroupsRoutes({ state, location, isMobile, isSmall }: RoutesProps) {
             element={<NewChannelModal />}
           />
           <Route path="/profile/:ship" element={<ProfileModal />} />
+          {isMobile ? (
+            <Route
+              path="/groups/:ship/:name/channels/chat/:chShip/:chName/picker/:writShip/:writTime"
+              element={<EmojiPicker />}
+            />
+          ) : null}
         </Routes>
       ) : null}
     </>
@@ -541,8 +560,6 @@ function App() {
   }, [handleError]);
 
   const state = location.state as { backgroundLocation?: Location } | null;
-
-  useConnectionChecker();
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -642,6 +659,7 @@ function RoutedApp() {
           <TooltipProvider skipDelayDuration={400}>
             <App />
             <Scheduler />
+            {import.meta.env.DEV && <Eyrie />}
           </TooltipProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </PersistQueryClientProvider>
